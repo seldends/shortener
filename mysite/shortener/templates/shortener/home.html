@@ -1,11 +1,33 @@
 {% extends "shortener/base.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
+
+  <div id="content-section">
+        <form method="POST">  
+       <div class="form-row  align-items-center">
+                <!-- <div class="col-md-10">
+                    <input type="url" class="form-control mb-2" id="url_input" placeholder="URL">
+                    {{ form.url_original }}
+                </div> -->
+        
+            {% csrf_token %}  
+            <fieldset class="col-md-10">
+                <!-- <legend class="border-bottom mb-4">Url</legend> -->
+                {{ form|crispy }}
+            </fieldset> 
+            <div class="col">
+                <button class="btn btn-outline-info" type="submit">Сократить ссылку</button>
+            </div>
+        </div> 
+    </form>
+
+
     <table class="table table-condensed" style="border-collapse:collapse;" >
         <thead>
             <tr>
                 <th>Original URL</th>
-                <th>Created</th>
                 <th>Short URL</th>
+                <th>Created</th>                
                 <th>All Clicks</th>
             </tr>
         </thead>
