@@ -31,16 +31,13 @@
                 <th>All Clicks</th>
             </tr>
         </thead>
-        <tbody>           
-            {% for site in site_list %}             
+        <tbody>                      
             <tr>
-                <td><a href="{{ site.url_original }}">{{ site.url_original }}</a></td>
-                <!-- <td>{{ site.url_short }}</td> -->
-                <td><a href="{{ site.get_short_url }}">{{ site.get_short_url }}</a></td>
+                <td>{{ site.url_original }}</td>
+                <td>{{ site.url_short }}</td> 
                 <td>{{ site.date_created|date:"F d, Y" }}</td>
                 <td>{{ site.clicks }}</td>                  
             </tr>
-            {% endfor %} 
         </tbody>     
     </table>  
 {% endblock content %}

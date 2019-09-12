@@ -1,14 +1,13 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import ListView, CreateView
-from django.views import View
 from .models import Url
 #from .forms import UrlForm
 
 
 class UrlListView(ListView):
     model =  Url
-    template_name = 'shortener/home.html'
+    template_name = 'shortener/url.html'
     context_object_name = 'site_list'
     ordering = ['-date_created']
 
@@ -21,10 +20,28 @@ class UrlCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(UrlCreateView, self).get_context_data(**kwargs)
+        #if
         context["site_list"] = self.model.objects.order_by('-date_created')
         return context
         
+
+
+def home(request):
+    context = {
+        'site_list': Url.objects.order_by('-date_created')
+    }
+    return render(request, 'shortener/home.html', context)
+
+def detail(request, url_short):
+    query = Url.objects.filter(url_short=url_short).first()
+
+    context = {
+        'site': query
+    }
+    return render(request, 'shortener/url.html', context)
+
+def link(request, url_short):
+    query = Url.objects.filter(url_short=url_short).first()
+    link = query.url_original
+    return HttpResponseRedirect(link)
    
-    #1. Если url есть в базе, значит ссылка была создана и отдать эту ссылку
-    #2. Если урл в базе нет, сгенерировать ссылку и дать ее
-    #3. Как придумать счетчик переходов
