@@ -5,11 +5,11 @@ from .models import Url
 #from .forms import UrlForm
 
 
-class UrlListView(ListView):
-    model =  Url
-    template_name = 'shortener/url.html'
-    context_object_name = 'site_list'
-    ordering = ['-date_created']
+# class UrlListView(ListView):
+#     model =  Url
+#     template_name = 'shortener/url.html'
+#     context_object_name = 'site_list'
+#     ordering = ['-date_created']
 
 
 class UrlCreateView(CreateView):
