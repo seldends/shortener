@@ -10,6 +10,7 @@ from django.core.exceptions import ValidationError
 
 # Create your models here.
 
+
 class Url(models.Model):
     url_original = models.CharField(max_length=200, unique=True, error_messages={'unique': 'URL уже есть в базе'})
     url_short = models.CharField(default=None, max_length=20, unique=True)
@@ -18,15 +19,12 @@ class Url(models.Model):
 
     def __str__(self):
         return self.url_original
-    
 
     def __init__(self, *args, **kwargs):
-        # if self.query.filer_by(url_original=url_original).first()==None:
         super().__init__(*args, **kwargs)
-        if self.url_short == None:
+        if self.url_short is None:
             self.url_short = self.generate_short_link()
 
-            
     def generate_short_link(self):
         characters = string.digits + string.ascii_letters
         url_short = ''.join(choices(characters, k=6))
@@ -35,9 +33,8 @@ class Url(models.Model):
         return url_short
 
     def get_short_url(self):
-        # url_path = reverse("shortcode", shortcode=self.url_short)
-        return "http://127.0.0.1:8000/{shortcode}".format(shortcode=self.url_short)
-
+        url_path = reverse('shortener:link', kwargs={'url_short': self.url_short})
+        return url_path
 
     def clean(self):
         headers = {
@@ -47,9 +44,7 @@ class Url(models.Model):
             requests.get(self.url_original, headers=headers)
         except(requests.RequestException, ValueError):
             raise ValidationError({'url_original': 'Введите корректный URL'})
-        
 
     def save(self, *args, **kwargs):
         self.full_clean()
         return super().save(*args, **kwargs)
-
