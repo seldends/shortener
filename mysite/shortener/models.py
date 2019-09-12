@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+import requests
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
@@ -35,3 +37,19 @@ class Url(models.Model):
     def get_short_url(self):
         # url_path = reverse("shortcode", shortcode=self.url_short)
         return "http://127.0.0.1:8000/{shortcode}".format(shortcode=self.url_short)
+
+
+    def clean(self):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:65.0) Gecko/20100101 Firefox/65.0'
+        }
+        try:
+            requests.get(self.url_original, headers=headers)
+        except(requests.RequestException, ValueError):
+            raise ValidationError({'url_original': 'Введите корректный URL'})
+        
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
