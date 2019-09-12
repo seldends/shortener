@@ -26,11 +26,11 @@ class UrlCreateView(CreateView):
         
 
 
-def home(request):
-    context = {
-        'site_list': Url.objects.order_by('-date_created')
-    }
-    return render(request, 'shortener/home.html', context)
+# def home(request):
+#     context = {
+#         'site_list': Url.objects.order_by('-date_created')
+#     }
+#     return render(request, 'shortener/home.html', context)
 
 def detail(request, url_short):
     query = Url.objects.filter(url_short=url_short).first()
@@ -42,6 +42,8 @@ def detail(request, url_short):
 
 def link(request, url_short):
     query = Url.objects.filter(url_short=url_short).first()
+    query.clicks = query.clicks + 1
+    query.save()
     link = query.url_original
     return HttpResponseRedirect(link)
    
