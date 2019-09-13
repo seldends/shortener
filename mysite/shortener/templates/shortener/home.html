@@ -10,10 +10,24 @@
                 {{ form|crispy }}
             </fieldset> 
             <div class="col">
-                <button class="btn btn-outline-info" type="submit">Сократить ссылку</button>
+                    {% if user.is_authenticated %}
+                        <button class="btn btn-outline-info" type="submit">Сократить ссылку</button>
+                    {% else %} 
+                        <button id="btnPopover" data-toggle="popover" class="btn btn-outline-info" data-content="Войдите, чтобы сократить ссылку" >Сократить ссылку</button>
+                        <div id="popover_content_wrapper" style="display: none">
+                                <div>This is your difgdfgdfgv content</div>
+                            </div>
+                        
+                        <!-- <button class="btn btn-outline-info" type="submit" data-toggle="popover" >Сократить ссылку</button>    -->
+                    {% endif %}
             </div>
         </div> 
     </form>
+
+    <a href="#" data-toggle="popover" 
+    title="Popover Header" 
+    data-content="Some content inside the popover">GeeksforGeeks</a> 
+
     {% if user.is_authenticated %}
     <table class="table table-condensed" style="border-collapse:collapse;" >
         <thead>
@@ -39,4 +53,16 @@
 
     {% endif %}
     
+    <script> 
+            $(document).ready(function(){ 
+                $('#btnPopover').popover(
+                    html: true,
+                    
+                    container: function(){
+                        return $('#popover_content_wrapper').html();}
+                ); 
+            }); 
+        </script> 
+
+
 {% endblock content %}

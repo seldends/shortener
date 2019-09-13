@@ -49,6 +49,8 @@ class Url(models.Model):
         if self.author is None:
             raise ValidationError({'url_original': 'Вам необходимо войти'})
 
+     
+
     def save(self, *args, **kwargs):
         self.full_clean()
         return super().save(*args, **kwargs)
