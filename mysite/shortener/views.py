@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 from .models import Url
 
 
@@ -17,17 +17,14 @@ class UrlCreateView(CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        print(form.instance.author)
         return super().form_valid(form)
 
 
 def link(request, url_short):
-    query = Url.objects.filter(url_short=url_short).first()
-    # print(type(query))
-    # print(query)
+    query = Url.objects.get(url_short=url_short)
     query.clicks += 1
     query.save()
-    # print(query.url_original)
-    # print(type(query.clicks))
-
     link = query.url_original
+
     return HttpResponseRedirect(link)

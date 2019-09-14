@@ -13,7 +13,7 @@
                     {% if user.is_authenticated %}
                         <button class="btn btn-outline-info" type="submit">Сократить ссылку</button>
                     {% else %} 
-                        <button id="popoverId" class="btn btn-outline-info">Сократить ссылку</button>    
+                        <button id="popoverId" class="btn btn-outline-info disabled">Сократить ссылку</button>    
                         <div id="popoverContent" class="d-none">
                             Войдите, чтобы сократить ссылку
                         <a href="{% url 'login' %}">Войти</a>
@@ -23,37 +23,33 @@
         </div> 
     </form>
 
- 
+    <div class="table-responsive-sm">
+        {% if user.is_authenticated %}
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Original URL</th>
+                    <th scope="col">Short URL</th>
+                    <th scope="col">Created</th>                
+                    <th scope="col">All Clicks</th>
+                </tr>
+            </thead>
+            <tbody>           
+                {% for site in site_list %}             
+                <tr>
+                    <td><a href="{{ site.url_original }}">{{ site.url_original }}</a></td>
+                    <td><a href="{{ site.get_short_url }}">{{ request.get_host }}{{ site.get_short_url }}</a></td>
+                    <td>{{ site.date_created|date:"F d, Y" }}</td>
+                    <td style="width:35%">{{ site.clicks }}</td>                  
+                </tr>
+                {% endfor %} 
+            </tbody>     
+        </table>  
+        {% else %} 
     
-
-
-
-
-
-    {% if user.is_authenticated %}
-    <table class="table table-condensed" style="border-collapse:collapse;" >
-        <thead>
-            <tr>
-                <th>Original URL</th>
-                <th>Short URL</th>
-                <th>Created</th>                
-                <th>All Clicks</th>
-            </tr>
-        </thead>
-        <tbody>           
-            {% for site in site_list %}             
-            <tr>
-                <td><a href="{{ site.url_original }}">{{ site.url_original }}</a></td>
-                <td><a href="{{ site.get_short_url }}">{{ request.get_host }}{{ site.get_short_url }}</a></td>
-                <td>{{ site.date_created|date:"F d, Y" }}</td>
-                <td>{{ site.clicks }}</td>                  
-            </tr>
-            {% endfor %} 
-        </tbody>     
-    </table>  
-    {% else %} 
-
-    {% endif %}
+        {% endif %}
+        </div>  
+    </div>
     
     <script> 
         $('#popoverId').popover({
@@ -70,6 +66,5 @@
             }
         });
     </script> 
-
 
 {% endblock content %}

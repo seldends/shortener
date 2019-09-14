@@ -12,11 +12,11 @@ from django.core.exceptions import ValidationError
 
 
 class Url(models.Model):
-    url_original = models.CharField(max_length=200, unique=True, error_messages={'unique': 'URL уже есть в базе'})
+    url_original = models.CharField(max_length=200)  # Нужно ли unique=True, error_messages={'unique': 'URL уже есть в базе'}
     url_short = models.CharField(default=None, max_length=20, unique=True)
     date_created = models.DateTimeField(default=timezone.now)
     clicks = models.IntegerField(default=0)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 
     def __str__(self):
         return self.url_original
@@ -45,11 +45,9 @@ class Url(models.Model):
             requests.get(self.url_original, headers=headers)
         except(requests.RequestException, ValueError):
             raise ValidationError({'url_original': 'Введите корректный URL'})
-
-        if self.author is None:
-            raise ValidationError({'url_original': 'Вам необходимо войти'})
-
-     
+        # print(self.author)
+        # if self.author is None:
+        #     raise ValidationError({'url_original': 'Вам необходимо войти'})
 
     def save(self, *args, **kwargs):
         self.full_clean()
