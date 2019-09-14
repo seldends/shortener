@@ -3,4 +3,8 @@ __pycache__/
 env/
 migrations/
 db.sqlite3
-
+static/
+assets/
+secret_key.txt
+test.html
+settings2.py
