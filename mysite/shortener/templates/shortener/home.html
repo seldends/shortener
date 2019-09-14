@@ -13,19 +13,22 @@
                     {% if user.is_authenticated %}
                         <button class="btn btn-outline-info" type="submit">Сократить ссылку</button>
                     {% else %} 
-                        <button id="btnPopover" data-toggle="popover" class="btn btn-outline-info" data-content="Войдите, чтобы сократить ссылку" >Сократить ссылку</button>
-                        <div id="popover_content_wrapper" style="display: none">
-                                <div>This is your difgdfgdfgv content</div>
-                            </div>
-                        
+                        <button id="popoverId" class="btn btn-outline-info">Сократить ссылку</button>    
+                        <div id="popoverContent" class="d-none">
+                            Войдите, чтобы сократить ссылку
+                        <a href="{% url 'login' %}">Войти</a>
+                        </div>
                     {% endif %}
             </div>
         </div> 
     </form>
 
-    <a href="#" data-toggle="popover" 
-    title="Popover Header" 
-    data-content="Some content inside the popover">GeeksforGeeks</a> 
+ 
+    
+
+
+
+
 
     {% if user.is_authenticated %}
     <table class="table table-condensed" style="border-collapse:collapse;" >
@@ -53,15 +56,20 @@
     {% endif %}
     
     <script> 
-            $(document).ready(function(){ 
-                $('#btnPopover').popover(
-                    html: true,
-                    
-                    container: function(){
-                        return $('#popover_content_wrapper').html();}
-                ); 
-            }); 
-        </script> 
+        $('#popoverId').popover({
+            html: true,
+            content: $('#popoverContent').html(),
+        });
+        $('#popoverId').click(function (e) {
+            e.stopPropagation();
+        });
+
+        $(document).click(function (e) {
+            if (($('.popover').has(e.target).length == 0) || $(e.target).is('.close')) {
+                $('#popoverId').popover('hide');
+            }
+        });
+    </script> 
 
 
 {% endblock content %}
