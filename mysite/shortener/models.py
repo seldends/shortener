@@ -12,11 +12,11 @@ from django.core.exceptions import ValidationError
 
 
 class Url(models.Model):
-    url_original = models.CharField(max_length=200)  # Нужно ли unique=True, error_messages={'unique': 'URL уже есть в базе'}
+    url_original = models.CharField(max_length=200)  # Нужно ли unique=True, error_messages={'unique': 'URL уже есть в базе'}? наверное нужно сделать редирект на уже существующую короткую ссылку
     url_short = models.CharField(default=None, max_length=20, unique=True)
     date_created = models.DateTimeField(default=timezone.now)
     clicks = models.IntegerField(default=0)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.url_original
@@ -29,7 +29,8 @@ class Url(models.Model):
     def generate_short_link(self):
         characters = string.digits + string.ascii_letters
         url_short = ''.join(choices(characters, k=6))
-        # if Url.object.filer_by(url_short=url_short).first():
+        # Нужно сделать проверку, вдруг рандомный код совпадет
+        # if Url.object.filter_by(url_short=url_short).first():
         #     return self.generate_short_link()
         return url_short
 
@@ -45,9 +46,8 @@ class Url(models.Model):
             requests.get(self.url_original, headers=headers)
         except(requests.RequestException, ValueError):
             raise ValidationError({'url_original': 'Введите корректный URL'})
-        # print(self.author)
-        # if self.author is None:
-        #     raise ValidationError({'url_original': 'Вам необходимо войти'})
+        if self.author is None:
+            raise ValidationError({'url_original': 'Вам необходимо войти'})
 
     def save(self, *args, **kwargs):
         self.full_clean()

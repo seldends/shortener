@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView
+from django.core.exceptions import ObjectDoesNotExist
 from .models import Url
 
 
@@ -22,9 +23,12 @@ class UrlCreateView(CreateView):
 
 
 def link(request, url_short):
-    query = Url.objects.get(url_short=url_short)
-    query.clicks += 1
-    query.save()
-    link = query.url_original
-
-    return HttpResponseRedirect(link)
+    try:
+        query = Url.objects.get(url_short=url_short)
+        query.clicks += 1
+        query.save()
+        link = query.url_original
+        return HttpResponseRedirect(link)
+    except ObjectDoesNotExist:
+        template_name = "shortener/404.html"
+        return render(request, template_name)
