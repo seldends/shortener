@@ -12,7 +12,13 @@ from django.core.exceptions import ValidationError
 
 
 class Url(models.Model):
-    url_original = models.CharField(max_length=200)  # Нужно ли unique=True, error_messages={'unique': 'URL уже есть в базе'}? наверное нужно сделать редирект на уже существующую короткую ссылку
+
+    # Нужно ли unique=True, error_messages={'unique': 'URL уже есть в базе'}?
+    #  + Чтобы не плодить уникальные записи
+    #  - Если делать одну запись, то тогда будет общий счетчик переходов
+    # Вывод: раздельный счетчик переходов важнее дублирующихся оригинальных ссылок
+
+    url_original = models.CharField(max_length=200)
     url_short = models.CharField(default=None, max_length=20, unique=True)
     date_created = models.DateTimeField(default=timezone.now)
     clicks = models.IntegerField(default=0)
