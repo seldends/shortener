@@ -7,22 +7,16 @@ from django.urls import reverse
 from django.utils import timezone
 import requests
 from django.core.exceptions import ValidationError
-
+from django.conf import settings
 # Create your models here.
 
 
 class Url(models.Model):
-
-    # Нужно ли unique=True, error_messages={'unique': 'URL уже есть в базе'}?
-    #  + Чтобы не плодить уникальные записи
-    #  - Если делать одну запись, то тогда будет общий счетчик переходов
-    # Вывод: раздельный счетчик переходов важнее дублирующихся оригинальных ссылок
-
-    url_original = models.CharField(max_length=200)
+    url_original = models.CharField(max_length=200)  # Нужно ли unique=True, error_messages={'unique': 'URL уже есть в базе'}? наверное нужно сделать редирект на уже существующую короткую ссылку
     url_short = models.CharField(default=None, max_length=20, unique=True)
     date_created = models.DateTimeField(default=timezone.now)
     clicks = models.IntegerField(default=0)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.url_original
@@ -48,12 +42,11 @@ class Url(models.Model):
         headers = {
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:65.0) Gecko/20100101 Firefox/65.0'
         }
+
         try:
             requests.get(self.url_original, headers=headers)
         except(requests.RequestException, ValueError):
-            raise ValidationError({'url_original': 'Введите корректный URL'})
-        if self.author is None:
-            raise ValidationError({'url_original': 'Вам необходимо войти'})
+            raise ValidationError({'url_original': 'Введите корректный URL'})  
 
     def save(self, *args, **kwargs):
         self.full_clean()
