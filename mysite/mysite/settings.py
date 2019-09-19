@@ -25,7 +25,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['206.81.22.41', 'localhost']
+ALLOWED_HOSTS = ['localhost', '68.183.223.224', 'www.selden.dev', 'selden.dev']
 
 
 # Application definition
@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DB_PASSWORD = os.environ['DB_PASSWORD']
+DB_PASSWORD = os.environ['PSQL_PASSWORD']
 
 DATABASES = {
     'default': {
@@ -142,3 +142,5 @@ SECURE_BROWSER_XSS_FILTER = True
 SESSION_COOKIE_SECURE = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
