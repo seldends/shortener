@@ -7,12 +7,12 @@ from django.urls import reverse
 from django.utils import timezone
 import requests
 from django.core.exceptions import ValidationError
-from django.conf import settings
+
 # Create your models here.
 
 
 class Url(models.Model):
-    url_original = models.CharField(max_length=200)  # Нужно ли unique=True, error_messages={'unique': 'URL уже есть в базе'}? наверное нужно сделать редирект на уже существующую короткую ссылку
+    url_original = models.CharField(max_length=200)
     url_short = models.CharField(default=None, max_length=20, unique=True)
     date_created = models.DateTimeField(default=timezone.now)
     clicks = models.IntegerField(default=0)
@@ -29,9 +29,6 @@ class Url(models.Model):
     def generate_short_link(self):
         characters = string.digits + string.ascii_letters
         url_short = ''.join(choices(characters, k=6))
-        # Нужно сделать проверку, вдруг рандомный код совпадет
-        # if Url.object.filter_by(url_short=url_short).first():
-        #     return self.generate_short_link()
         return url_short
 
     def get_short_url(self):
@@ -46,7 +43,7 @@ class Url(models.Model):
         try:
             requests.get(self.url_original, headers=headers)
         except(requests.RequestException, ValueError):
-            raise ValidationError({'url_original': 'Введите корректный URL'})  
+            raise ValidationError({'url_original': 'Введите корректный URL'})
 
     def save(self, *args, **kwargs):
         self.full_clean()
