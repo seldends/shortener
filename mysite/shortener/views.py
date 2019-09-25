@@ -2,13 +2,15 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views.generic import CreateView
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from .models import Url
+from .forms import UrlForm
 
 
 class UrlCreateView(CreateView):
     model = Url
     template_name = 'shortener/home.html'
-    fields = ['url_original']
+    form_class = UrlForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -23,11 +25,12 @@ class UrlCreateView(CreateView):
 
 def link(request, url_short):
     try:
-        query = Url.objects.get(url_short=url_short)
-        query.clicks += 1
-        query.save()
-        link = query.url_original
-        return HttpResponseRedirect(link)
+        query = Url.objects.select_for_update().get(url_short=url_short)
+        with transaction.atomic():
+            query.clicks += 1
+            query.save()
+            link = query.url_original
+            return HttpResponseRedirect(link)
     except ObjectDoesNotExist:
         template_name = "shortener/404.html"
         return render(request, template_name)

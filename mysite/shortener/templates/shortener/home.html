@@ -1,70 +1,75 @@
 {% extends "shortener/base.html" %}
 {% load crispy_forms_tags %}
+{% crispy form form.helper %}
 {% block content %}
 
-
 <div class="container"> 
-    <div class="row"> 
-       <div class="col">
-           
-            <form method="POST">  
-                <div class="form-row  align-items-center">     
-                    {% csrf_token %}  
-                    <div class="col">
-                            {% if user.is_authenticated %}
-                                <button class="btn btn-outline-info" type="submit">Сократить ссылку</button>
-                            {% else %} 
-                            <div id="popoverId" data-toggle="popover">
-                                <button style="pointer-events: none;" class="btn btn-outline-info " disabled>Сократить ссылку</button>    
-                            </div>
-                            <div id="popoverContent" class="d-none">
-                                <p>Войдите, чтобы сократить ссылку</p>
-                            <a class="btn btn-primary btn-sm float-right" href="{% url 'login' %}">Войти</a>
-                            </div>
-    
-                            {% endif %}
-                    </div>
-                </div> 
-            </form>
-            
-            <div class="table-responsive-sm"> 
-                {% if user.is_authenticated %}
-                <table class="table table-sm" style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Original URL</th>
-                            <th>Short URL</th>
-                            <th>Created</th>                
-                            <th>All Clicks</th>
-                        </tr>
-                    </thead>
-                    <tbody>           
-                        {% for site in site_list %}             
-                        <tr>
-                            <td><a href="{{ site.url_original }}">{{ site.url_original }}</a></td>
-                            <td><a href="{{ site.get_short_url }}">{{ request.get_host }}{{ site.get_short_url }}</a></td>
-                            <td>{{ site.date_created|date:"F d, Y" }}</td>
-                            <td>{{ site.clicks }}</td>                  
-                        </tr>
-                        {% endfor %} 
-                    </tbody>     
-                </table>  
-                {% else %}
-                {% endif %}
-            </div>  
 
-        </div> 
+    <div class="row"> 
+       <div class="col">     
+            <form method="POST">  
+                <div id="searchrow" class="form-row"> 
+                {% csrf_token %}  
+                    <div id="formsearch">
+                        {% crispy form %}
+                    </div>
+                    <div id="formbtn">
+                        {% if user.is_authenticated %}
+                            <button class="btn btn-outline-info" type="submit">Сократить ссылку</button>
+                        {% else %} 
+                        <div id="popoverId" data-toggle="popover">
+                            <button style="pointer-events: none;" class="btn btn-outline-info " disabled>Сократить ссылку</button>    
+                        </div>
+                        <div id="popoverContent" class="d-none">
+                            <p>Войдите, чтобы сократить ссылку</p>
+                            <a class="btn btn-primary btn-sm float-right" href="{% url 'login' %}">Войти</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>    
+       </div>
     </div>
+
+    <div class="row">
+        <div class="table-responsive-sm"> 
+            {% if user.is_authenticated %}
+            <table class="table table-sm  table-hover table-borderless">
+                <thead class="thead-light">
+                    <tr>
+                        <th style="width: 60%">Original URL</th>
+                        <th style="width: 20%">Short URL</th>
+                        <th style="width: 15%">Created</th>
+                        <th style="width: 5%">Clicks</th>
+                    </tr>
+                </thead>
+                <tbody>           
+                    {% for site in site_list %}      
+                    <tr>
+                        <td><a href="{{ site.url_original }}">{{ site.url_original }}</a></td>
+                        <td><a href="{{ site.get_short_url }}">{{ request.get_host }}{{ site.get_short_url }}</a></td>
+                        <td>{{ site.date_created|date:"F d, Y" }}</td>
+                        <td>{{ site.clicks }}</td>                  
+                    </tr>  
+                    {% endfor %} 
+                </tbody>     
+            </table>  
+            {% else %}
+            {% endif %}
+        </div> 
+    </div>         
+    
 </div>
 
-        <script> 
-            $(function () {
-                $('[data-toggle="popover"]').popover()
-                });
-            $('#popoverId').popover({
-                html: true,
-                content: $('#popoverContent').html(),
+
+    <script> 
+        $(function () {
+            $('[data-toggle="popover"]').popover()
             });
-        </script> 
+        $('#popoverId').popover({
+            html: true,
+            content: $('#popoverContent').html(),
+        });
+    </script> 
 
 {% endblock content %}
