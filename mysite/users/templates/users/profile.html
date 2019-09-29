@@ -4,4 +4,18 @@
     <h1>
         {{ user.username }}
     </h1>
+
+
+
+    <div id="content-section">
+        <form class="form-signin"  method="POST">  
+            {% csrf_token %} 
+            <fieldset class="form-group">
+                {{ form|crispy }}
+            </fieldset> 
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Update</button>
+            </div>
+        </form>
+
 {% endblock content %}

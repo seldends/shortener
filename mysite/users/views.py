@@ -2,23 +2,28 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm
+from django.contrib.auth.models import User
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
+from django.views.generic import CreateView, DetailView, UpdateView
+from django.urls import reverse_lazy
 
 # Create your views here.
 
 
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created {username}!')
-            return redirect('login')
-    else:
-        form = UserRegisterForm()
-    return render(request, 'users/register.html', {'form': form})
+class UserCreateView(SuccessMessageMixin, CreateView):
+    model = User
+    template_name = 'users/register.html'
+    form_class = UserRegisterForm
+    success_url = reverse_lazy('users:login')
+    success_message = "%(username)s account created!"
 
 
-@login_required
-def profile(request):
-    return render(request, 'users/profile.html')
+class UserUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    template_name = 'users/profile.html'
+    fields = ['email']
+
+    def get_object(self):
+        return self.request.user

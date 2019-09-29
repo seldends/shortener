@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from .models import Url
 from .forms import UrlForm
+from django.views import View
 
 
 class UrlCreateView(CreateView):
@@ -19,18 +20,21 @@ class UrlCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(UrlCreateView, self).get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            context["site_list"] = self.model.objects.filter(author=self.request.user).order_by('-date_created')           
+            context["site_list"] = self.model.objects.filter(author=self.request.user).order_by('-date_created')
         return context
 
 
-def link(request, url_short):
-    try:
-        query = Url.objects.select_for_update().get(url_short=url_short)
-        with transaction.atomic():
-            query.clicks += 1
-            query.save()
-            link = query.url_original
-            return HttpResponseRedirect(link)
-    except ObjectDoesNotExist:
-        template_name = "shortener/404.html"
-        return render(request, template_name)
+class UrlRedirectView(View):
+
+    def get(self, request, *args, **kwargs):
+        url_short = kwargs['url_short']
+        try:
+            query = Url.objects.select_for_update().get(url_short=url_short)
+            with transaction.atomic():
+                query.clicks += 1
+                query.save()
+                url = query.url_original
+                return HttpResponseRedirect(url)
+        except ObjectDoesNotExist:
+            template_name = "shortener/404.html"
+            return render(request, template_name)
