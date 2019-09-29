@@ -16,11 +16,12 @@ class UserCreateView(SuccessMessageMixin, CreateView):
     success_message = "%(username)s account created!"
 
 
-class UserUpdateView(LoginRequiredMixin, UpdateView):
+class UserUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = User
     template_name = 'users/profile.html'
     fields = ['email']
     success_url = reverse_lazy('users:profile')
+    success_message = "Информация изменена"
 
     def get_object(self):
         return self.request.user

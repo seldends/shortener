@@ -25,12 +25,12 @@ class UrlCreateView(CreateView):
 
 
 class UrlRedirectView(View):
-
+    @classmethod
     def get(self, request, *args, **kwargs):
         url_short = kwargs['url_short']
         try:
-            query = Url.objects.select_for_update().get(url_short=url_short)
             with transaction.atomic():
+                query = Url.objects.select_for_update().get(url_short=url_short)
                 query.clicks += 1
                 query.save()
                 url = query.url_original
